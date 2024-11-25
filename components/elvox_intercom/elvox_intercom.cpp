@@ -224,7 +224,7 @@ void ElvoxComponent::loop() {
   //   ESP_LOGD(TAG, "Warning! received simplebus 1 command but your transmission section is set to simplebus 2.");
   //   ESP_LOGD(TAG, "Maybe you need to set        simplebus_1: true");
   // }
-  if ((this->temp_.size() >= 99) || (this->temp_.size() <= 101)) {
+  if ((this->temp_.size() == 99) || (this->temp_.size() = 101)) {
     elvox_decode(temp_);
   }
 }
@@ -233,6 +233,7 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   if (strcmp(event_, "esphome.none") != 0 || logbook_language_ != LANGUAGE_DISABLED) {
 
   }
+  ESP_LOGD(TAG, "ELVOX DECODE");
   auto capi = new esphome::api::CustomAPIDevice();
   char message[40];
   int bits = 0;
