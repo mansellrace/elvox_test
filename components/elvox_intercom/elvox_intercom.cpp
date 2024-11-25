@@ -279,6 +279,11 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   convertToHex(message, hex);
   ESP_LOGD(TAG, "Converted to Hex: %s", hex);
 
+  if (strcmp(event_, "esphome.none") != 0) {
+    ESP_LOGD(TAG, "Send event to home assistant on %s", event_);
+    capi->fire_homeassistant_event(event_, {{"hex", hex}});
+  }
+
   // if (src.size() == 38) {
   //   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
   //     const uint16_t value = src[i];
