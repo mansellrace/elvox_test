@@ -127,9 +127,9 @@ class ElvoxComponent : public Component {
 //     this->parent_->send_command(data);
 //   }
 
- protected:
-  ElvoxComponent *parent_;
-};
+//  protected:
+//   ElvoxComponent *parent_;
+// };
 
 
 }  // namespace elvox_intercom
