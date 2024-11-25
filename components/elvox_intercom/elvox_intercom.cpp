@@ -224,7 +224,7 @@ void ElvoxComponent::loop() {
   //   ESP_LOGD(TAG, "Warning! received simplebus 1 command but your transmission section is set to simplebus 2.");
   //   ESP_LOGD(TAG, "Maybe you need to set        simplebus_1: true");
   // }
-  if ((this->temp_.size() == 99) || (this->temp_.size() = 101)) {
+  if ((this->temp_.size() >= 99) || (this->temp_.size() <= 101)) {
     elvox_decode(temp_);
   }
 }
