@@ -253,7 +253,6 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   if (strcmp(event_, "esphome.none") != 0 || logbook_language_ != LANGUAGE_DISABLED) {
 
   }
-  ESP_LOGD(TAG, "ELVOX DECODE");
   auto capi = new esphome::api::CustomAPIDevice();
   char message[50];
   int bits = 0;
@@ -271,23 +270,25 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
       }
   }
 
-  message[bits] = '\0';
-
   ESP_LOGD(TAG, "Received %i bits: %s", bits, message);
 
-  char hex[12]; // Risultato esadecimale
-  convertToHex(message, hex);
-  ESP_LOGD(TAG, "Converted to Hex: %s", hex);
+  if (bits == 47) {
+    message[bits] = '\0';
 
-  if (strcmp(event_, "esphome.none") != 0) {
-    ESP_LOGD(TAG, "Send event to home assistant on %s", event_);
-    capi->fire_homeassistant_event(event_, {{"hex", hex}});
-  }
+    char hex[12]; // Risultato esadecimale
+    convertToHex(message, hex);
+    ESP_LOGD(TAG, "Converted to Hex: %s", hex);
 
-  for (auto &listener : listeners_) {
-    if (listener->hex_ == hex) {
-      ESP_LOGD(TAG, "Binary sensor fired! %s", hex);
-      listener->turn_on(&listener->timer_, listener->auto_off_);
+    if (strcmp(event_, "esphome.none") != 0) {
+      ESP_LOGD(TAG, "Send event to home assistant on %s", event_);
+      capi->fire_homeassistant_event(event_, {{"hex", hex}});
+    }
+
+    for (auto &listener : listeners_) {
+      if (listener->hex_ == hex) {
+        ESP_LOGD(TAG, "Binary sensor fired! %s", hex);
+        listener->turn_on(&listener->timer_, listener->auto_off_);
+      }
     }
   }
 
