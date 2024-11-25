@@ -13,9 +13,8 @@ class ElvoxIntercomBinarySensor : public binary_sensor::BinarySensor, public Elv
     void turn_off(uint32_t *timer) override;
 
   protected:
-    binary_sensor::BinarySensor *incoming_command_sensor_{nullptr};
-    uint16_t address_;
-    uint16_t command_;
+    binary_sensor::BinarySensor *incoming_hex_sensor_{nullptr};
+    uint16_t hex_;
 };
 
 }  // namespace elvox_intercom
