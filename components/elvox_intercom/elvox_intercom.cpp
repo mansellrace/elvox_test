@@ -240,6 +240,7 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
 
   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
     const uint16_t value = src[i];
+    ESP_LOGD(TAG, "Analizzato bit: %i", value);
       if (value < 1000) {
         message[bits] = 0;
         bits += 1;
