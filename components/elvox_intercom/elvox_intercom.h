@@ -26,22 +26,19 @@ enum LanguageType {
 };
 
 struct ElvoxIntercomData {
-  uint16_t command;
-  uint16_t address;
+  uint16_t hex;
 };
 
 class ElvoxIntercomListener {
   public:
-    void set_command(uint16_t command) { this->command_ = command; }
-    void set_address(uint16_t address) { this->address_ = address; }
+    void set_hex(uint16_t hex) { this->hex_ = hex; }
     void set_auto_off(uint16_t auto_off) { this->auto_off_ = auto_off; }
 
     virtual void turn_on(uint32_t *timer, uint16_t auto_off){};
     virtual void turn_off(uint32_t *timer){};
     uint32_t timer_;
   //private:
-    uint16_t address_;
-    uint16_t command_;
+    uint16_t hex_;
     uint16_t auto_off_;
 };
 
