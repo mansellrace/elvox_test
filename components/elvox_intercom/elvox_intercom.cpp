@@ -364,7 +364,7 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
 //     }
 //   }
 // }
-
+}
 
 std::string ElvoxComponent::logbook_gen() {
   return "ciao";
