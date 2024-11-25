@@ -14,7 +14,7 @@ class ElvoxIntercomBinarySensor : public binary_sensor::BinarySensor, public Elv
 
   protected:
     binary_sensor::BinarySensor *incoming_hex_sensor_{nullptr};
-    *char hex_;
+    std::string hex_;
 };
 
 }  // namespace elvox_intercom

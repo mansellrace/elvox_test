@@ -32,16 +32,17 @@ struct ElvoxIntercomData {
 
 class ElvoxIntercomListener {
   public:
-    void set_hex(uint16_t hex) { this->hex_ = hex; }
+    void set_hex(const std::string& hex) { this->hex_ = hex; }
     void set_auto_off(uint16_t auto_off) { this->auto_off_ = auto_off; }
 
     virtual void turn_on(uint32_t *timer, uint16_t auto_off){};
     virtual void turn_off(uint32_t *timer){};
     uint32_t timer_;
-  //private:
-    *char hex_;
+  private:
+    std::string hex_;
     uint16_t auto_off_;
 };
+
 
 struct ElvoxComponentStore {
   static void gpio_intr(ElvoxComponentStore *arg);
