@@ -224,7 +224,7 @@ void ElvoxComponent::loop() {
   //   ESP_LOGD(TAG, "Warning! received simplebus 1 command but your transmission section is set to simplebus 2.");
   //   ESP_LOGD(TAG, "Maybe you need to set        simplebus_1: true");
   // }
-  if ((this->temp_.size() >= 99) || (this->temp_.size() <= 101)) {
+  if ((this->temp_.size() >= 99) && (this->temp_.size() <= 101)) {
     elvox_decode(temp_);
   }
 }
@@ -235,7 +235,7 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   }
   ESP_LOGD(TAG, "ELVOX DECODE");
   auto capi = new esphome::api::CustomAPIDevice();
-  char message[40];
+  char message[50];
   int bits = 0;
 
   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
