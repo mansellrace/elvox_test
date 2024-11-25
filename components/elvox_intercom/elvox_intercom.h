@@ -114,18 +114,18 @@ class ElvoxComponent : public Component {
   std::vector<ElvoxIntercomListener *> listeners_{};
 };
 
-template<typename... Ts> class ElvoxIntercomSendAction : public Action<Ts...> {
- public:
-  ElvoxIntercomSendAction(ElvoxComponent *parent) : parent_(parent) {}
-  TEMPLATABLE_VALUE(uint16_t, command)
-  TEMPLATABLE_VALUE(uint16_t, address)
+// template<typename... Ts> class ElvoxIntercomSendAction : public Action<Ts...> {
+//  public:
+//   ElvoxIntercomSendAction(ElvoxComponent *parent) : parent_(parent) {}
+//   TEMPLATABLE_VALUE(uint16_t, command)
+//   TEMPLATABLE_VALUE(uint16_t, address)
 
-  void play(Ts... x) {
-    ElvoxIntercomData data{};
-    data.command = this->command_.value(x...);
-    data.address = this->address_.value(x...);
-    this->parent_->send_command(data);
-  }
+//   void play(Ts... x) {
+//     ElvoxIntercomData data{};
+//     data.command = this->command_.value(x...);
+//     data.address = this->address_.value(x...);
+//     this->parent_->send_command(data);
+//   }
 
  protected:
   ElvoxComponent *parent_;
