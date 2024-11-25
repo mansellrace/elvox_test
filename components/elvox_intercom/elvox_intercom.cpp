@@ -235,18 +235,18 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   }
   ESP_LOGD(TAG, "ELVOX DECODE");
   auto capi = new esphome::api::CustomAPIDevice();
-  char message[50];
+  char message[60];
   int bits = 0;
 
   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
     const uint16_t value = src[i];
     ESP_LOGD(TAG, "Analizzato bit: %i", value);
       if (value > 500 && value < 1000) {
-        message[bits] = 0;
+        message[bits] = '0';
         bits += 1;
       }
-      else if (value > 1200) {
-        message[bits] = 1;
+      else if (value > 1200 && value < 2000) {
+        message[bits] = '1';
         bits += 1;
       }
   }
