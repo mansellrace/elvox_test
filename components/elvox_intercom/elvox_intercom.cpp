@@ -220,11 +220,11 @@ void ElvoxComponent::loop() {
     ESP_LOGD(TAG, "Received Raw with size %i", temp_.size());
     this->dump(temp_);
   }
-  if (this->temp_.size() == 76 && this->simplebus_1_ == false) {
-    ESP_LOGD(TAG, "Warning! received simplebus 1 command but your transmission section is set to simplebus 2.");
-    ESP_LOGD(TAG, "Maybe you need to set        simplebus_1: true");
-  }
-  if ((this->temp_.size() == 38) || (this->temp_.size() == 76)) {
+  // if (this->temp_.size() == 76 && this->simplebus_1_ == false) {
+  //   ESP_LOGD(TAG, "Warning! received simplebus 1 command but your transmission section is set to simplebus 2.");
+  //   ESP_LOGD(TAG, "Maybe you need to set        simplebus_1: true");
+  // }
+  if ((this->temp_.size() >= 99) || (this->temp_.size() <= 101)) {
     elvox_decode(temp_);
   }
 }
@@ -234,33 +234,48 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
 
   }
   auto capi = new esphome::api::CustomAPIDevice();
-  char message[18];
+  char message[40];
   int bits = 0;
-  if (src.size() == 38) {
-    for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
-      const uint16_t value = src[i];
-        if (value < 3200 && value > 1000) {
-          message[bits] = 0;
-          bits += 1;
-        }
-        else if (value < 6200 && value > 3500) {
-          message[bits] = 1;
-          bits += 1;
-        }
-    }
-  } else if (src.size() == 76) {
-    for (uint16_t i = 3; i < src.size() - 1; i = i + 4) {
-      const uint16_t value = src[i];
-        if (value < 2500 && value > 1000) {
-          message[bits] = 0;
-          bits += 1;
-        }
-        else if (value < 6200 && value > 3500) {
-          message[bits] = 1;
-          bits += 1;
-        }
-    }
+
+  for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
+    const uint16_t value = src[i];
+      if (value < 1000) {
+        message[bits] = 0;
+        bits += 1;
+      }
+      else if (value > 1200) {
+        message[bits] = 1;
+        bits += 1;
+      }
   }
+
+  ESP_LOGD(TAG, "Received %i bits: %s", bits, message);
+
+  // if (src.size() == 38) {
+  //   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
+  //     const uint16_t value = src[i];
+  //       if (value < 3200 && value > 1000) {
+  //         message[bits] = 0;
+  //         bits += 1;
+  //       }
+  //       else if (value < 6200 && value > 3500) {
+  //         message[bits] = 1;
+  //         bits += 1;
+  //       }
+  //   }
+  // } else if (src.size() == 76) {
+  //   for (uint16_t i = 3; i < src.size() - 1; i = i + 4) {
+  //     const uint16_t value = src[i];
+  //       if (value < 2500 && value > 1000) {
+  //         message[bits] = 0;
+  //         bits += 1;
+  //       }
+  //       else if (value < 6200 && value > 3500) {
+  //         message[bits] = 1;
+  //         bits += 1;
+  //       }
+  //   }
+  // }
 
   if (bits == 18) {
     int sum = 0;
