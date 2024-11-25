@@ -229,18 +229,38 @@ void ElvoxComponent::loop() {
   }
 }
 
+void convertToHex(const char *binary, char *hex) {
+    int length = strlen(binary);
+    int hexLength = length / 4;
+    for (int i = 0; i < hexLength; i++) {
+        int value = 0;
+        for (int j = 0; j < 4; j++) {
+            if (binary[i * 4 + j] == '1') {
+                value += (1 << (3 - j));
+            }
+        }
+        if (value < 10) {
+            hex[i] = '0' + value;
+        } else {
+            hex[i] = 'A' + (value - 10);
+        }
+    }
+    hex[hexLength] = '\0';
+}
+
+
 void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   if (strcmp(event_, "esphome.none") != 0 || logbook_language_ != LANGUAGE_DISABLED) {
 
   }
   ESP_LOGD(TAG, "ELVOX DECODE");
   auto capi = new esphome::api::CustomAPIDevice();
-  char message[60];
+  char message[50];
   int bits = 0;
 
   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
     const uint16_t value = src[i];
-    ESP_LOGD(TAG, "Analizzato bit: %i", value);
+    // ESP_LOGD(TAG, "Analizzato bit: %i", value);
       if (value > 500 && value < 1000) {
         message[bits] = '0';
         bits += 1;
@@ -254,6 +274,10 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   message[bits] = '\0';
 
   ESP_LOGD(TAG, "Received %i bits: %s", bits, message);
+
+  char hex[12]; // Risultato esadecimale
+  convertToHex(message, hex);
+  ESP_LOGD(TAG, "Converted to Hex: %s", hex);
 
   // if (src.size() == 38) {
   //   for (uint16_t i = 1; i < src.size() - 1; i = i + 2) {
