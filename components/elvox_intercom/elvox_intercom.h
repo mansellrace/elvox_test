@@ -38,7 +38,6 @@ class ElvoxIntercomListener {
     virtual void turn_on(uint32_t *timer, uint16_t auto_off){};
     virtual void turn_off(uint32_t *timer){};
     uint32_t timer_;
-  private:
     std::string hex_;
     uint16_t auto_off_;
 };

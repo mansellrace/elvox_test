@@ -317,53 +317,53 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
   //   }
   // }
 
-  if (bits == 18) {
-    int sum = 0;
-    int checksum = 0;
-    for (int i = 0; i < 14; i++) {
-      if (message[i] == 1) sum++;
-    }
-    checksum = (message[17] * 8) + (message[16] * 4) + (message[15] * 2) + message[14];
-    if (checksum == sum) {
-      int msgAddr[6];
-      int msgCode[8];
-      for (int j = 0; j < 14; j++) {
-        if (j < 6)  msgAddr[j] = message[j];
-        else msgCode[j - 6] = message[j];
-      }
-      this->command = (msgAddr[5] * 32) + (msgAddr[4] * 16) + (msgAddr[3] * 8) + (msgAddr[2] * 4) + (msgAddr[1] * 2) + msgAddr[0];
-      this->address = (msgCode[7] * 128) + (msgCode[6] * 64) + (msgCode[5] * 32) + (msgCode[4] * 16) + (msgCode[3] * 8) + (msgCode[2] * 4) + (msgCode[1] * 2) + msgCode[0];
-      if (this->command != 63){
-        ESP_LOGD(TAG, "Received command %i, address %i", this->command, this->address);
+//   if (bits == 18) {
+//     int sum = 0;
+//     int checksum = 0;
+//     for (int i = 0; i < 14; i++) {
+//       if (message[i] == 1) sum++;
+//     }
+//     checksum = (message[17] * 8) + (message[16] * 4) + (message[15] * 2) + message[14];
+//     if (checksum == sum) {
+//       int msgAddr[6];
+//       int msgCode[8];
+//       for (int j = 0; j < 14; j++) {
+//         if (j < 6)  msgAddr[j] = message[j];
+//         else msgCode[j - 6] = message[j];
+//       }
+//       this->command = (msgAddr[5] * 32) + (msgAddr[4] * 16) + (msgAddr[3] * 8) + (msgAddr[2] * 4) + (msgAddr[1] * 2) + msgAddr[0];
+//       this->address = (msgCode[7] * 128) + (msgCode[6] * 64) + (msgCode[5] * 32) + (msgCode[4] * 16) + (msgCode[3] * 8) + (msgCode[2] * 4) + (msgCode[1] * 2) + msgCode[0];
+//       if (this->command != 63){
+//         ESP_LOGD(TAG, "Received command %i, address %i", this->command, this->address);
         
-        if (strcmp(event_, "esphome.none") != 0) {
-          ESP_LOGD(TAG, "Send event to home assistant on %s", event_);
-          capi->fire_homeassistant_event(event_, {{"command", std::to_string(id(command))}, {"address", std::to_string(id(address))}});
-        }
-        for (auto &listener : listeners_) {
-          if (listener->command_ == command && listener->address_ == address) {
-            ESP_LOGD(TAG, "Binary sensor fired! %i %i", listener->command_, listener->address_);
-            listener->turn_on(&listener->timer_, listener->auto_off_);
-          }
-        }
-        if (logbook_language_ != LANGUAGE_DISABLED) {
-          if (strcmp(logbook_entity_, "none") != 0) {
-            capi->call_homeassistant_service("logbook.log", {
-              {"name", "Elvox"},
-              {"message", logbook_gen()},
-              {"entity_id", logbook_entity_},
-              });
-          } else {
-            capi->call_homeassistant_service("logbook.log", {
-              {"name", "Elvox"},
-              {"message", logbook_gen()},
-              });
-          }
-        }
-      }
-    }
-  }
-}
+//         if (strcmp(event_, "esphome.none") != 0) {
+//           ESP_LOGD(TAG, "Send event to home assistant on %s", event_);
+//           capi->fire_homeassistant_event(event_, {{"command", std::to_string(id(command))}, {"address", std::to_string(id(address))}});
+//         }
+//         for (auto &listener : listeners_) {
+//           if (listener->command_ == command && listener->address_ == address) {
+//             ESP_LOGD(TAG, "Binary sensor fired! %i %i", listener->command_, listener->address_);
+//             listener->turn_on(&listener->timer_, listener->auto_off_);
+//           }
+//         }
+//         if (logbook_language_ != LANGUAGE_DISABLED) {
+//           if (strcmp(logbook_entity_, "none") != 0) {
+//             capi->call_homeassistant_service("logbook.log", {
+//               {"name", "Elvox"},
+//               {"message", logbook_gen()},
+//               {"entity_id", logbook_entity_},
+//               });
+//           } else {
+//             capi->call_homeassistant_service("logbook.log", {
+//               {"name", "Elvox"},
+//               {"message", logbook_gen()},
+//               });
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 
 
 std::string ElvoxComponent::logbook_gen() {
