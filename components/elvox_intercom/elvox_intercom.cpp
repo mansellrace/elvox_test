@@ -251,7 +251,7 @@ void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
       }
   }
 
-  message[49] = '\0'
+  message[bits] = '\0';
 
   ESP_LOGD(TAG, "Received %i bits: %s", bits, message);
 
