@@ -26,7 +26,8 @@ enum LanguageType {
 };
 
 struct ElvoxIntercomData {
-  uint16_t hex;
+  uint16_t command;
+  uint16_t address;
 };
 
 class ElvoxIntercomListener {
@@ -38,7 +39,7 @@ class ElvoxIntercomListener {
     virtual void turn_off(uint32_t *timer){};
     uint32_t timer_;
   //private:
-    uint16_t hex_;
+    *char hex_;
     uint16_t auto_off_;
 };
 
@@ -85,7 +86,7 @@ class ElvoxComponent : public Component {
   void loop() override;
   uint16_t command, address;
   void register_listener(ElvoxIntercomListener *listener);
-  void send_command(ElvoxIntercomData data);
+  //void send_command(ElvoxIntercomData data);
   bool send_buffer[19];
   bool sending, preamble;
   int send_index;
