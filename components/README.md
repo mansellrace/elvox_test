@@ -1,14 +1,14 @@
-Comelit Intercom component
+Elvox Intercom component
 ===================
 
-The ``comelit_intercom`` allows you to easily interface the esphome-comelit project on esphome and home assistant
+The ``elvox_intercom`` allows you to easily interface the esphome-elvox project on esphome and home assistant
 
 Basic esphome configuration entry:
 
     external_components:
-      - source: github://mansellrace/comelit-esphome
+      - source: github://mansellrace/elvox-esphome
 
-    comelit_intercom:
+    elvox_intercom:
 
  
 Example of a configuration entry, which generates a binary_sensor entity that goes to on when receiving a call to internal intercom 10, and a button entity that when pressed sends the command to open external door
@@ -16,18 +16,12 @@ Example of a configuration entry, which generates a binary_sensor entity that go
     external_components:
       - source: github://mansellrace/comelit-esphome
       
-    comelit_intercom:
+    elvox_intercom:
     
 	binary_sensor:
-	  - platform: comelit_intercom
-	    address: 10
-	button:
-	  - platform: template
-	    name: Open Door
-	    on_press:
-	      - comelit_intercom.send:
-	          command: 16
-	          address: 10
+  	  - platform: elvox_intercom
+            hex: "8FE0E7CC2FF"
+
 
 More configuration examples are available at this link: (under construction)
 
