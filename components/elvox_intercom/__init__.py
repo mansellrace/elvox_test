@@ -22,9 +22,9 @@ CONF_LOGBOOK_LANGUAGE = "logbook_language"
 CONF_LOGBOOK_ENTITY = "logbook_entity"
 CONF_DUMP = "dump"
 CONF_EVENT = "event"
-CONF_COMMAND = "command"
+# CONF_COMMAND = "command"
 CONF_HEX = "hex"
-CONF_SIMPLEBUS1 = "simplebus_1"
+# CONF_SIMPLEBUS1 = "simplebus_1"
 MULTI_CONF = False
 
 HardwareType = elvox_intercom_ns.enum("Hw_Version")
@@ -132,7 +132,7 @@ async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     var = cg.new_Pvariable(action_id, template_args, paren)
 
     template_ = await cg.templatable(config[CONF_HEX], args, cv.templatable(cv.string))
-    cg.add(var.set_command(template_))
+    cg.add(var.set_hex(template_))
     
     hex_value = config[CONF_HEX]
     binary_value = bin(int(hex_value, base=16))[2:].zfill(len(hex_value) * 4)
@@ -140,5 +140,5 @@ async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     int_array = [500 if bit == '0' else 1500 for bit in binary_value]
     
     template_ = await cg.templatable(int_array, args, cg.std_vector.template(cg.uint16))
-    cg.add(var.set_command(template_))
+    cg.add(var.set_array(template_))
     return var
