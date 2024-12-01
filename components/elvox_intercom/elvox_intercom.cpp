@@ -431,53 +431,49 @@ void ElvoxComponent::register_listener(ElvoxIntercomListener *listener) {
   }
 
 
-// void ElvoxComponent::send_command(ElvoxIntercomData data) {
-//   if (this->sending){
-//     ESP_LOGD(TAG, "Sending of command %i address %i cancelled, another sending is in progress", data.command, data.address);
-//     return;
-//   }
-//   if (this->simplebus_1_){
-//     ESP_LOGD(TAG, "Simplebus 1: Sending command %i, address %i", data.command, data.address);
-//   } else {
-//     ESP_LOGD(TAG, "Simplebus 2: Sending command %i, address %i", data.command, data.address);
-//   }
-//   this->rx_pin_->detach_interrupt();
-//   int checksum_counter = 0;
+void ElvoxComponent::send_command(ElvoxIntercomData data) {
+  if (this->sending){
+    ESP_LOGD(TAG, "Sending of command %i address %i cancelled, another sending is in progress", data.command, data.address);
+    return;
+  }
+  ESP_LOGD(TAG, "Simplebus 2: Sending command %i, address %i", data.command, data.address);
+  this->rx_pin_->detach_interrupt();
+  int checksum_counter = 0;
 
-//   for (int i=0; i<6; i++){
-//     if (bitRead(data.command, i)) {
-//       this->send_buffer[this->send_index] = true;
-//       checksum_counter++;
-//     } else {
-//       this->send_buffer[this->send_index] = false;
-//     }
-//     this->send_index++;
-//   }
+  for (int i=0; i<6; i++){
+    if (bitRead(data.command, i)) {
+      this->send_buffer[this->send_index] = true;
+      checksum_counter++;
+    } else {
+      this->send_buffer[this->send_index] = false;
+    }
+    this->send_index++;
+  }
 
-//   for (int i=0; i<8; i++) {
-//     if (bitRead(data.address, i)) {
-//       this->send_buffer[this->send_index] = true;
-//       checksum_counter++;
-//     } else {
-//       this->send_buffer[this->send_index] = false;
-//     }
-//     this->send_index++;
-//   }
+  for (int i=0; i<8; i++) {
+    if (bitRead(data.address, i)) {
+      this->send_buffer[this->send_index] = true;
+      checksum_counter++;
+    } else {
+      this->send_buffer[this->send_index] = false;
+    }
+    this->send_index++;
+  }
 
-//   for (int i=0; i<4; i++) {
-//     if (bitRead(checksum_counter, i)) {
-//       this->send_buffer[this->send_index] = true;
-//     } else {
-//       this->send_buffer[this->send_index] = false;
-//     }
-//     this->send_index++;
-//   }
-//   this->send_buffer[this->send_index] = false;
+  for (int i=0; i<4; i++) {
+    if (bitRead(checksum_counter, i)) {
+      this->send_buffer[this->send_index] = true;
+    } else {
+      this->send_buffer[this->send_index] = false;
+    }
+    this->send_index++;
+  }
+  this->send_buffer[this->send_index] = false;
 
-//   this->send_index = 0;
-//   this->sending = true;
-//   this->preamble = true;
-// }
+  this->send_index = 0;
+  this->sending = true;
+  this->preamble = true;
+}
 
 void ElvoxComponent::sending_loop_simplebus_2() {
   uint32_t now = micros();
