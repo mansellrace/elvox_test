@@ -33,12 +33,14 @@ struct ElvoxIntercomData {
 class ElvoxIntercomListener {
   public:
     void set_hex(const std::string& hex) { this->hex_ = hex; }
+    void set_array(const std::vector<uint16_t> array) { this->array_ = array; }
     void set_auto_off(uint16_t auto_off) { this->auto_off_ = auto_off; }
 
     virtual void turn_on(uint32_t *timer, uint16_t auto_off){};
     virtual void turn_off(uint32_t *timer){};
     uint32_t timer_;
     std::string hex_;
+    std::vector<uint16_t> array_;
     uint16_t auto_off_;
 };
 
