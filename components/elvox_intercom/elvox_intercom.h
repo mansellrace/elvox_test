@@ -129,7 +129,7 @@ template<typename... Ts> class ElvoxIntercomSendAction : public Action<Ts...> {
   void play(Ts... x) {
     ElvoxIntercomData data{};
     data.hex = this->hex_.value(x...);
-    data.array = this->array_.value(x...);
+    data.array = this->array_;
     this->parent_->send_command(data);
   }
 
