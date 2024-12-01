@@ -23,7 +23,7 @@ CONF_LOGBOOK_ENTITY = "logbook_entity"
 CONF_DUMP = "dump"
 CONF_EVENT = "event"
 CONF_COMMAND = "command"
-CONF_ADDRESS = "address"
+CONF_HEX = "hex"
 CONF_SIMPLEBUS1 = "simplebus_1"
 MULTI_CONF = False
 
@@ -63,13 +63,13 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(ElvoxIntercom),
-            cv.Optional(CONF_HW_VERSION, default="2.5"): cv.enum(HW_TYPES, upper=False),
-            cv.Optional(CONF_SENSITIVITY, default="default"): cv.string,
+            cv.Optional(CONF_HW_VERSION, default="2.6"): cv.enum(HW_TYPES, upper=False),
+            cv.Optional(CONF_SENSITIVITY, default="9"): cv.string,
             cv.Optional(CONF_RX_PIN, default=12): pins.internal_gpio_input_pin_schema,
             cv.Optional(CONF_TX_PIN, default=5): pins.internal_gpio_output_pin_schema,
             cv.Optional(CONF_LOGBOOK_LANGUAGE, default="disabled"): cv.enum(LANGUAGE_TYPES),
             cv.Optional(CONF_LOGBOOK_ENTITY, default="none"): cv.string,
-            cv.Optional(CONF_FILTER, default="1000us"): cv.All(
+            cv.Optional(CONF_FILTER, default="100us"): cv.All(
                 cv.positive_time_period_microseconds,
                 cv.Range(max=TimePeriod(microseconds=2500)),
             ),
@@ -77,7 +77,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_BUFFER_SIZE, default="400b"): cv.validate_bytes,
             cv.Optional(CONF_DUMP, default=False): cv.boolean,
             cv.Optional(CONF_EVENT, default="elvox"): cv.string,
-            cv.Optional(CONF_SIMPLEBUS1, default=False): cv.boolean,
+            # cv.Optional(CONF_SIMPLEBUS1, default=False): cv.boolean,
         }   
     )
     .extend(cv.COMPONENT_SCHEMA),
@@ -106,14 +106,13 @@ async def to_code(config):
     cg.add(var.set_buffer_size(config[CONF_BUFFER_SIZE]))
     cg.add(var.set_dump(config[CONF_DUMP]))
     cg.add(var.set_event("esphome." + config[CONF_EVENT]))
-    cg.add(var.set_simplebus_1(config[CONF_SIMPLEBUS1]))
+    # cg.add(var.set_simplebus_1(config[CONF_SIMPLEBUS1]))
 
 
 ELVOX_INTERCOM_SEND_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(ElvoxIntercom),
-        cv.Required(CONF_COMMAND): cv.templatable(cv.hex_uint16_t),
-        cv.Required(CONF_ADDRESS): cv.templatable(cv.hex_uint16_t),
+        cv.Required(CONF_HEX): cv.templatable(cv.hex_uint16_t)
     }
 )
 
@@ -121,11 +120,22 @@ ELVOX_INTERCOM_SEND_SCHEMA = cv.Schema(
 @automation.register_action(
     "elvox_intercom.send", ElvoxIntercomSendAction, ELVOX_INTERCOM_SEND_SCHEMA
 )
+# async def elvox_intercom_send_to_code(config, action_id, template_args, args):
+#     paren = await cg.get_variable(config[CONF_ID])
+#     var = cg.new_Pvariable(action_id, template_args, paren)
+#     template_ = await cg.templatable(config[CONF_HEX], args, cg.uint16)
+#     cg.add(var.set_command(template_))
+#     return var
+
 async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_args, paren)
-    template_ = await cg.templatable(config[CONF_COMMAND], args, cg.uint16)
+    
+    hex_value = config[CONF_HEX]
+    binary_value = bin(int(hex_value, base=16))[2:].zfill(len(hex_value) * 4)
+    
+    int_array = [500 if bit == '0' else 1500 for bit in binary_value]
+    
+    template_ = await cg.templatable(int_array, args, cg.std_vector.template(cg.uint16))
     cg.add(var.set_command(template_))
-    template_ = await cg.templatable(config[CONF_ADDRESS], args, cg.uint16)
-    cg.add(var.set_address(template_))
     return var
