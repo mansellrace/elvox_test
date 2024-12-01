@@ -112,7 +112,7 @@ async def to_code(config):
 ELVOX_INTERCOM_SEND_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.use_id(ElvoxIntercom),
-        cv.Required(CONF_HEX): cv.templatable(cv.std_string)
+        cv.Required(CONF_HEX): cv.templatable(cv.string)
     }
 )
 
