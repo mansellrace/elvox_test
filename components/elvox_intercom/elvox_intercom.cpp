@@ -432,43 +432,43 @@ void ElvoxComponent::register_listener(ElvoxIntercomListener *listener) {
 
 
 void ElvoxComponent::send_command(ElvoxIntercomData data) {
-  if (this->sending){
-    ESP_LOGD(TAG, "Sending of command %i address %i cancelled, another sending is in progress", data.command, data.address);
-    return;
-  }
-  ESP_LOGD(TAG, "Simplebus 2: Sending command %i, address %i", data.command, data.address);
+  // if (this->sending){
+  //   ESP_LOGD(TAG, "Sending of command %s address %i cancelled, another sending is in progress", data.hex, data.address);
+  //   return;
+  // }
+  ESP_LOGD(TAG, "Simplebus 2: Sending command %s, address %s", data.hex, data.array);
   this->rx_pin_->detach_interrupt();
   int checksum_counter = 0;
 
-  for (int i=0; i<6; i++){
-    if (bitRead(data.command, i)) {
-      this->send_buffer[this->send_index] = true;
-      checksum_counter++;
-    } else {
-      this->send_buffer[this->send_index] = false;
-    }
-    this->send_index++;
-  }
+  // for (int i=0; i<6; i++){
+  //   if (bitRead(data.command, i)) {
+  //     this->send_buffer[this->send_index] = true;
+  //     checksum_counter++;
+  //   } else {
+  //     this->send_buffer[this->send_index] = false;
+  //   }
+  //   this->send_index++;
+  // }
 
-  for (int i=0; i<8; i++) {
-    if (bitRead(data.address, i)) {
-      this->send_buffer[this->send_index] = true;
-      checksum_counter++;
-    } else {
-      this->send_buffer[this->send_index] = false;
-    }
-    this->send_index++;
-  }
+  // for (int i=0; i<8; i++) {
+  //   if (bitRead(data.address, i)) {
+  //     this->send_buffer[this->send_index] = true;
+  //     checksum_counter++;
+  //   } else {
+  //     this->send_buffer[this->send_index] = false;
+  //   }
+  //   this->send_index++;
+  // }
 
-  for (int i=0; i<4; i++) {
-    if (bitRead(checksum_counter, i)) {
-      this->send_buffer[this->send_index] = true;
-    } else {
-      this->send_buffer[this->send_index] = false;
-    }
-    this->send_index++;
-  }
-  this->send_buffer[this->send_index] = false;
+  // for (int i=0; i<4; i++) {
+  //   if (bitRead(checksum_counter, i)) {
+  //     this->send_buffer[this->send_index] = true;
+  //   } else {
+  //     this->send_buffer[this->send_index] = false;
+  //   }
+  //   this->send_index++;
+  // }
+  // this->send_buffer[this->send_index] = false;
 
   this->send_index = 0;
   this->sending = true;

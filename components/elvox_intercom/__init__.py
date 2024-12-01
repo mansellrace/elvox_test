@@ -130,6 +130,9 @@ ELVOX_INTERCOM_SEND_SCHEMA = cv.Schema(
 async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_args, paren)
+
+    template_ = await cg.templatable(config[CONF_HEX], args, cv.templatable(cv.string))
+    cg.add(var.set_command(template_))
     
     hex_value = config[CONF_HEX]
     binary_value = bin(int(hex_value, base=16))[2:].zfill(len(hex_value) * 4)

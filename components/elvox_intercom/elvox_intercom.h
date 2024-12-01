@@ -26,7 +26,8 @@ enum LanguageType {
 };
 
 struct ElvoxIntercomData {
-  std::vector<uint16_t> hex;
+  std::string hex;
+  std::vector<uint16_t> array;
 };
 
 class ElvoxIntercomListener {
@@ -115,11 +116,13 @@ class ElvoxComponent : public Component {
 template<typename... Ts> class ElvoxIntercomSendAction : public Action<Ts...> {
  public:
   ElvoxIntercomSendAction(ElvoxComponent *parent) : parent_(parent) {}
-  TEMPLATABLE_VALUE(std::vector<uint16_t>, hex)
+  TEMPLATABLE_VALUE(std::string, hex)
+  TEMPLATABLE_VALUE(std::vector<uint16_t>, array)
 
   void play(Ts... x) {
     ElvoxIntercomData data{};
     data.hex = this->hex_.value(x...);
+    data.array = this->array_.value(x...);
     this->parent_->send_command(data);
   }
 
