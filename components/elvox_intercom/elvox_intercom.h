@@ -117,14 +117,14 @@ class ElvoxComponent : public Component {
 
 template<typename... Ts> class ElvoxIntercomSendAction : public Action<Ts...> {
  public:
-  void set_hex(const std::string& hex) { this->hex_ = hex; }
+  // void set_hex(const std::string& hex) { this->hex_ = hex; }
   void set_array(const std::vector<uint16_t> array) { this->array_ = array; }
-  std::string hex_;
+  // std::string hex_;
   std::vector<uint16_t> array_;
 
   ElvoxIntercomSendAction(ElvoxComponent *parent) : parent_(parent) {}
   TEMPLATABLE_VALUE(std::string, hex)
-  TEMPLATABLE_VALUE(std::vector<uint16_t>, array)
+  // TEMPLATABLE_VALUE(std::vector<uint16_t>, array)
 
   void play(Ts... x) {
     ElvoxIntercomData data{};
