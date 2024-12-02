@@ -67,8 +67,7 @@ class ElvoxComponent : public Component {
   void elvox_decode(std::vector<uint16_t> src);
   void dump(std::vector<uint16_t>) const;
   std::string logbook_gen();
-  void sending_loop_simplebus_2();
-  void sending_loop_simplebus_1();
+  void sending_loop();
 
   void set_rx_pin(InternalGPIOPin *pin) { rx_pin_ = pin; }
   void set_tx_pin(InternalGPIOPin *pin) { tx_pin_ = pin; }
@@ -81,7 +80,6 @@ class ElvoxComponent : public Component {
   void set_idle_us(uint32_t idle_us) { this->idle_us_ = idle_us; }
   void set_dump(bool dump_raw) { this->dump_raw_ = dump_raw; }
   void set_event(const char *event) { this->event_ = event; }
-  void set_simplebus_1(bool simplebus_1) { this->simplebus_1_ = simplebus_1; }
 
   void setup() override;
   void dump_config() override;
