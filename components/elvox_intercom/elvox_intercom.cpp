@@ -484,11 +484,11 @@ void ElvoxComponent::sending_loop() {
   //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
   //     this->tx_pin_->digital_write(true);
   //     this->send_next_bit = now + 3000;
-  //     this->send_next_change = now + 20;
+  //     this->send_next_change = now + 9;
   //     while (this->send_next_bit >= micros()) {
   //       if (this->send_next_change < micros()) {
   //         this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-  //         this->send_next_change = this->send_next_change + 20;
+  //         this->send_next_change = this->send_next_change + 9;
   //       }
   //     }
   //     this->send_next_bit = 0;
@@ -498,7 +498,7 @@ void ElvoxComponent::sending_loop() {
   //   } else {                                     // long pause of initializing
   //     if (now < this->send_next_change) return;
   //     this->send_next_bit = now + 3000;
-  //     this->send_next_change = now + 20;
+  //     this->send_next_change = now + 9;
   //     this->preamble = false;
   //   }
   // } else {                                       // bit sending routine, preamble ended
@@ -507,7 +507,7 @@ void ElvoxComponent::sending_loop() {
   //       while (this->send_next_bit >= micros()) {
   //         if (this->send_next_change < micros()) {
   //           this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-  //           this->send_next_change = this->send_next_change + 20;
+  //           this->send_next_change = this->send_next_change + 9;
   //         }
   //       }
   //       this->send_next_change = 0;
@@ -520,7 +520,7 @@ void ElvoxComponent::sending_loop() {
   //     } else {                                    // no signal generation
   //       if (now < this->send_next_bit) return;
   //       this->send_next_bit = now + 3000;
-  //       this->send_next_change = now + 20;
+  //       this->send_next_change = now + 9;
   //       this->send_index++;
   //     }
     // } else {                                      // end of transmission
