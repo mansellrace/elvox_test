@@ -231,11 +231,19 @@ void ElvoxComponent::loop() {
 
 void convertToHex(const char *binary, char *hex) {
     int length = strlen(binary);
-    int hexLength = length / 4;
+    int paddedLength = (length + 3) / 4 * 4; // Aggiunge gli zeri necessari per arrivare al multiplo di 4
+    char paddedBinary[paddedLength + 1];
+    strcpy(paddedBinary, binary);
+    for (int i = length; i < paddedLength; i++) {
+        paddedBinary[i] = '0';
+    }
+    paddedBinary[paddedLength] = '\0';
+    
+    int hexLength = paddedLength / 4;
     for (int i = 0; i < hexLength; i++) {
         int value = 0;
         for (int j = 0; j < 4; j++) {
-            if (binary[i * 4 + j] == '1') {
+            if (paddedBinary[i * 4 + j] == '1') {
                 value += (1 << (3 - j));
             }
         }
@@ -247,6 +255,7 @@ void convertToHex(const char *binary, char *hex) {
     }
     hex[hexLength] = '\0';
 }
+
 
 
 void ElvoxComponent::elvox_decode(std::vector<uint16_t> src) {
