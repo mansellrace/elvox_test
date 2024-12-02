@@ -175,11 +175,7 @@ void ElvoxComponent::loop() {
     }
   }
   if (this->sending){
-    if (this->simplebus_1_){
-      sending_loop_simplebus_1();
-    } else {
-      sending_loop_simplebus_2();
-    }
+    sending_loop();
     return;
   }
 
@@ -220,10 +216,7 @@ void ElvoxComponent::loop() {
     ESP_LOGD(TAG, "Received Raw with size %i", temp_.size());
     this->dump(temp_);
   }
-  // if (this->temp_.size() == 76 && this->simplebus_1_ == false) {
-  //   ESP_LOGD(TAG, "Warning! received simplebus 1 command but your transmission section is set to simplebus 2.");
-  //   ESP_LOGD(TAG, "Maybe you need to set        simplebus_1: true");
-  // }
+
   if ((this->temp_.size() >= 99) && (this->temp_.size() <= 101)) {
     elvox_decode(temp_);
   }
@@ -485,109 +478,62 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
   this->preamble = true;
 }
 
-void ElvoxComponent::sending_loop_simplebus_2() {
+void ElvoxComponent::sending_loop() {
   uint32_t now = micros();
   if (this->preamble) {
-    if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
-      this->tx_pin_->digital_write(true);
-      this->send_next_bit = now + 3000;
-      this->send_next_change = now + 20;
-      while (this->send_next_bit >= micros()) {
-        if (this->send_next_change < micros()) {
-          this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-          this->send_next_change = this->send_next_change + 20;
-        }
-      }
-      this->send_next_bit = 0;
-      this->send_next_change = this->send_next_change + 16000;
-      this->tx_pin_->digital_write(false);
-      return;
-    } else {                                     // long pause of initializing
-      if (now < this->send_next_change) return;
-      this->send_next_bit = now + 3000;
-      this->send_next_change = now + 20;
-      this->preamble = false;
-    }
-  } else {                                       // bit sending routine, preamble ended
-    if (this->send_index < 19) {
-      if (this->send_next_change > 0) {           // carrier generation
-        while (this->send_next_bit >= micros()) {
-          if (this->send_next_change < micros()) {
-            this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-            this->send_next_change = this->send_next_change + 20;
-          }
-        }
-        this->send_next_change = 0;
-        this->tx_pin_->digital_write(false);
-        if (this->send_buffer[this->send_index]) {
-          this->send_next_bit = this->send_next_bit + 6000;
-        } else {
-          this->send_next_bit = this->send_next_bit + 3000;
-        }
-      } else {                                    // no signal generation
-        if (now < this->send_next_bit) return;
-        this->send_next_bit = now + 3000;
-        this->send_next_change = now + 20;
-        this->send_index++;
-      }
-    } else {                                      // end of transmission
+  //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
+  //     this->tx_pin_->digital_write(true);
+  //     this->send_next_bit = now + 3000;
+  //     this->send_next_change = now + 20;
+  //     while (this->send_next_bit >= micros()) {
+  //       if (this->send_next_change < micros()) {
+  //         this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
+  //         this->send_next_change = this->send_next_change + 20;
+  //       }
+  //     }
+  //     this->send_next_bit = 0;
+  //     this->send_next_change = this->send_next_change + 16000;
+  //     this->tx_pin_->digital_write(false);
+  //     return;
+  //   } else {                                     // long pause of initializing
+  //     if (now < this->send_next_change) return;
+  //     this->send_next_bit = now + 3000;
+  //     this->send_next_change = now + 20;
+  //     this->preamble = false;
+  //   }
+  // } else {                                       // bit sending routine, preamble ended
+  //   if (this->send_index < 19) {
+  //     if (this->send_next_change > 0) {           // carrier generation
+  //       while (this->send_next_bit >= micros()) {
+  //         if (this->send_next_change < micros()) {
+  //           this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
+  //           this->send_next_change = this->send_next_change + 20;
+  //         }
+  //       }
+  //       this->send_next_change = 0;
+  //       this->tx_pin_->digital_write(false);
+  //       if (this->send_buffer[this->send_index]) {
+  //         this->send_next_bit = this->send_next_bit + 6000;
+  //       } else {
+  //         this->send_next_bit = this->send_next_bit + 3000;
+  //       }
+  //     } else {                                    // no signal generation
+  //       if (now < this->send_next_bit) return;
+  //       this->send_next_bit = now + 3000;
+  //       this->send_next_change = now + 20;
+  //       this->send_index++;
+  //     }
+    // } else {                                      // end of transmission
       this->sending = false;
       this->tx_pin_->digital_write(false);
       this->send_next_bit = 0;
       this->send_next_change = 0;
       this->send_index = 0;
       this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
-    }
+    // }
   }
 }
 
-void ElvoxComponent::sending_loop_simplebus_1() {
-  uint32_t now = micros();
-  if (this->preamble) {
-    if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
-      this->tx_pin_->digital_write(true);
-      this->send_next_bit = now + 3000;
-      while (this->send_next_bit >= micros()) {
-      }
-      this->send_next_bit = 0;
-      this->send_next_change = now + 16000;
-      this->tx_pin_->digital_write(false);
-      return;
-    } else {                                     // long pause of initializing
-      if (now < this->send_next_change) return;
-      this->send_next_bit = now + 3000;
-      this->send_next_change = now + 3020;
-      this->preamble = false;
-    }
-  } else {                                       // bit sending routine, preamble ended
-    if (this->send_index < 19) {
-      if (this->send_next_change > 0) {           // carrier generation
-        this->tx_pin_->digital_write(true);
-        while (this->send_next_bit >= micros()) {
-        }
-        this->send_next_change = 0;
-        this->tx_pin_->digital_write(false);
-        if (this->send_buffer[this->send_index]) {
-          this->send_next_bit = this->send_next_bit + 6000;
-        } else {
-          this->send_next_bit = this->send_next_bit + 3000;
-        }
-      } else {                                    // no signal generation
-        if (now < this->send_next_bit) return;
-        this->send_next_bit = now + 3000;
-        this->send_next_change = now + 3020;
-        this->send_index++;
-      }
-    } else {                                      // end of transmission
-      this->sending = false;
-      this->tx_pin_->digital_write(false);
-      this->send_next_bit = 0;
-      this->send_next_change = 0;
-      this->send_index = 0;
-      this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
-    }
-  }
-}
 
 
 }  // namespace elvox_intercom
