@@ -235,7 +235,7 @@ void convertToHex(const char *binary, char *hex) {
     char paddedBinary[paddedLength + 1];
     strcpy(paddedBinary, binary);
     for (int i = length; i < paddedLength; i++) {
-        paddedBinary[i] = '0';
+        paddedBinary[i] = '1';
     }
     paddedBinary[paddedLength] = '\0';
     
