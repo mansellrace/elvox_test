@@ -136,7 +136,7 @@ async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     
     hex_value = config[CONF_HEX]
     binary_value = bin(int(hex_value, base=16))[2:].zfill(len(hex_value) * 4)
-    
+    print(binary_value)
     sequenza = [1900]
     for bit in binary_value:
         if bit == '0':
