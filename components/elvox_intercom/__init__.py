@@ -147,6 +147,7 @@ async def elvox_intercom_send_to_code(config, action_id, template_args, args):
             sequenza.append(1500)
 
     template_ = await cg.templatable(sequenza, args, cg.std_vector.template(cg.uint16))
+    print(len(sequenza))
     print(sequenza)
     cg.add(var.set_array(template_))
     return var
