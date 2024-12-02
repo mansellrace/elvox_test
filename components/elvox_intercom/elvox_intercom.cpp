@@ -445,7 +445,8 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
   //   ESP_LOGD(TAG, "Sending of command %s address %i cancelled, another sending is in progress", data.hex, data.address);
   //   return;
   // }
-  ESP_LOGD(TAG, "Simplebus 2: Sending command %s, address %s", data.hex, data.array);
+  ESP_LOGD(TAG, "Elvox: Sending hex %s, array %s", data.hex, data.array);
+  ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex);
   this->rx_pin_->detach_interrupt();
   int checksum_counter = 0;
 
