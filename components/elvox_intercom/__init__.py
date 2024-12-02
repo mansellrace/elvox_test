@@ -137,8 +137,16 @@ async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     hex_value = config[CONF_HEX]
     binary_value = bin(int(hex_value, base=16))[2:].zfill(len(hex_value) * 4)
     
-    int_array = [500 if bit == '0' else 1500 for bit in binary_value]
-    
-    template_ = await cg.templatable(int_array, args, cg.std_vector.template(cg.uint16))
+    sequenza = [1900]
+    for bit in binary_value:
+        if bit == '0':
+            sequenza.append(500)
+            sequenza.append(1500)
+        else:
+            sequenza.append(1500)
+            sequenza.append(500)
+
+    template_ = await cg.templatable(sequenza, args, cg.std_vector.template(cg.uint16))
+    print(sequenza)
     cg.add(var.set_array(template_))
     return var
