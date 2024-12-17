@@ -434,10 +434,10 @@ void ElvoxComponent::register_listener(ElvoxIntercomListener *listener) {
 
 
 void ElvoxComponent::send_command(ElvoxIntercomData data) {
-  // if (this->sending){
-  //   ESP_LOGD(TAG, "Sending of command %s address %i cancelled, another sending is in progress", data.hex, data.address);
-  //   return;
-  // }
+  if (this->sending){
+    ESP_LOGD(TAG, "Sending of hex %s cancelled, another sending is in progress", data.hex);
+    return;
+  }
   ESP_LOGD(TAG, "Elvox: Sending hex %s, array %s", data.hex, data.array);
   ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex);
   this->rx_pin_->detach_interrupt();
