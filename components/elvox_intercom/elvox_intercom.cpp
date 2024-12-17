@@ -504,19 +504,15 @@ void ElvoxComponent::sending_loop() {
   }
 
   if (this->send_next_change == 0) { // analizza prossimo bit
-    this->send_next_change = now + this->send_buffer[this->send_index];
-    if (this->send_index % 2 == 0) { //se pari allora bisogna modulare
-      this->tx_pin_->digital_write(true);
-      while (this->send_next_change >= micros()) {
-      // MODULAZIONE
-      }
-      
-      this->send_index++;
-      this->tx_pin_->digital_write(false);
-
-    } else { // se dispari allora imposta attesa prossimo bit
-      this->send_index++;
+    this->tx_pin_->digital_write(true);
+    while ((now + this->send_buffer[this->send_index]) >= micros()) {
+    // MODULAZIONE
     }
+
+    this->send_index++;
+    this->tx_pin_->digital_write(false);
+    this->send_next_change = now + this->send_buffer[this->send_index];
+    this->send_index++;
   }
   
   if (this->send_index > this->max_index) {
