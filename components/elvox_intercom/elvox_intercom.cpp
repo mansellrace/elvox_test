@@ -490,8 +490,10 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
 void ElvoxComponent::sending_loop() {
   uint32_t now = micros();
 
-  size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
-  ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
+  if (this->send_index == 0) {
+    size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
+    ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
+  }
   
   if (this->send_next_change > 0) { // attesa pausa tra la modulazione
     if (this->send_next_change < micros()) { // controlla se è finita la pausa
@@ -522,6 +524,7 @@ void ElvoxComponent::sending_loop() {
     this->send_next_change = 0;
     this->send_index = 0;
     this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
+    ESP_LOGD(TAG, "Elvox: End of transmission");
   }
 }
 
