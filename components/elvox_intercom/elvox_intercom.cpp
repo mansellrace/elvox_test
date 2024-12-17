@@ -499,6 +499,7 @@ void ElvoxComponent::sending_loop() {
     } else {
       return;
     }
+  }
 
   if (this->send_next_change == 0) { // analizza prossimo bit
 
