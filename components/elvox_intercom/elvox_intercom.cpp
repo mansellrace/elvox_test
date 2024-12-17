@@ -444,7 +444,7 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
 
   size_t size = std::min(data.array.size(), sizeof(this->send_buffer) / sizeof(this->send_buffer[0]));
   for (size_t i = 0; i < size; ++i) {
-    send_buffer[i] = array[i];
+    this->send_buffer[i] = data.array[i];
   }
 
   // for (int i=0; i<6; i++){
