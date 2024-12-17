@@ -441,7 +441,11 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
   // ESP_LOGD(TAG, "Elvox: Sending array %s", data.array);
   ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex.c_str());
   this->rx_pin_->detach_interrupt();
-  int checksum_counter = 0;
+
+  size_t size = std::min(data.array.size(), sizeof(this->send_buffer) / sizeof(this->send_buffer[0]));
+  for (size_t i = 0; i < size; ++i) {
+    send_buffer[i] = array[i];
+  }
 
   // for (int i=0; i<6; i++){
   //   if (bitRead(data.command, i)) {
@@ -481,7 +485,8 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
 void ElvoxComponent::sending_loop() {
   uint32_t now = micros();
 
-
+  size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
+  ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %zu", size);
 
   // if (this->preamble) {
   //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
@@ -527,12 +532,12 @@ void ElvoxComponent::sending_loop() {
   //       this->send_index++;
   //     }
     // } else {                                      // end of transmission
-    this->sending = false;
-    this->tx_pin_->digital_write(false);
-    this->send_next_bit = 0;
-    this->send_next_change = 0;
-    this->send_index = 0;
-    this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
+  this->sending = false;
+  this->tx_pin_->digital_write(false);
+  this->send_next_bit = 0;
+  this->send_next_change = 0;
+  this->send_index = 0;
+  this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
   //   }
   // }
 }
