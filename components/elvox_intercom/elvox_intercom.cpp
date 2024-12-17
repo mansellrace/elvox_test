@@ -446,6 +446,7 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
   for (size_t i = 0; i < size; ++i) {
     this->send_buffer[i] = data.array[i];
   }
+  this->max_index = size;
 
 
 
@@ -489,7 +490,7 @@ void ElvoxComponent::sending_loop() {
   uint32_t now = micros();
 
   size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
-  ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %zu", size);
+  ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
   
 
   // if (this->preamble) {
