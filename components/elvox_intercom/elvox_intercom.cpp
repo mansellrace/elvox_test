@@ -438,8 +438,8 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
     ESP_LOGD(TAG, "Sending of hex %s cancelled, another sending is in progress", data.hex);
     return;
   }
-  ESP_LOGD(TAG, "Elvox: Sending array %s", data.array);
-  ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex);
+  // ESP_LOGD(TAG, "Elvox: Sending array %s", data.array);
+  ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex.c_str());
   this->rx_pin_->detach_interrupt();
   int checksum_counter = 0;
 
