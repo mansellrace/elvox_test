@@ -495,7 +495,7 @@ void ElvoxComponent::sending_loop() {
   std::ostringstream oss;
   for (size_t i = 0; i < size; ++i) {
       if (i != 0) {
-          oss << ",";
+          oss << ", ";
       }
       oss << this->send_buffer[i];
   }
