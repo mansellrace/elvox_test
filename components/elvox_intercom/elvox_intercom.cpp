@@ -447,6 +447,9 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
     this->send_buffer[i] = data.array[i];
   }
 
+
+
+
   // for (int i=0; i<6; i++){
   //   if (bitRead(data.command, i)) {
   //     this->send_buffer[this->send_index] = true;
@@ -487,6 +490,16 @@ void ElvoxComponent::sending_loop() {
 
   size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
   ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %zu", size);
+
+  std::ostringstream oss;
+  for (size_t i = 0; i < size; ++i) {
+      if (i != 0) {
+          oss << ",";
+      }
+      oss << this->send_buffer[i];
+  }
+  
+  ESP_LOGD(TAG, "Elvox: Sending buffer [%s]", oss.str().c_str());
 
   // if (this->preamble) {
   //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
