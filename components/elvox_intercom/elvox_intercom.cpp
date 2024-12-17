@@ -3,6 +3,7 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/core/application.h"
 #include <Arduino.h>
+#include <sstream>
 
 namespace esphome {
 namespace elvox_intercom {
