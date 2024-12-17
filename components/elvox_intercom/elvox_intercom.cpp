@@ -3,7 +3,6 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/core/application.h"
 #include <Arduino.h>
-#include <sstream>
 
 namespace esphome {
 namespace elvox_intercom {
@@ -491,16 +490,7 @@ void ElvoxComponent::sending_loop() {
 
   size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
   ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %zu", size);
-
-  std::ostringstream oss;
-  for (size_t i = 0; i < size; ++i) {
-      if (i != 0) {
-          oss << ", ";
-      }
-      oss << this->send_buffer[i];
-  }
   
-  ESP_LOGD(TAG, "Elvox: Sending buffer [%s]", oss.str().c_str());
 
   // if (this->preamble) {
   //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
