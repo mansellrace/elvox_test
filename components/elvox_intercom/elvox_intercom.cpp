@@ -482,6 +482,7 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
   // this->send_buffer[this->send_index] = false;
 
   this->send_index = 0;
+  this->send_next_change = 0;
   this->sending = true;
   // this->preamble = true;
 }
@@ -492,6 +493,36 @@ void ElvoxComponent::sending_loop() {
   size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
   ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
   
+  if (this->send_next_change > 0) { // attesa pausa tra la modulazione
+    if (this->send_next_change < micros()) { // controlla se è finita la pausa
+      this->send_next_change = 0;
+    } else {
+      return;
+    }
+
+  if (this->send_next_change == 0) { // analizza prossimo bit
+
+    if (this->send_index % 2 == 0) { //se pari allora bisogna modulare
+      this->tx_pin_->digital_write(true);
+      // MODULAZIONE
+      this->send_index++;
+      this->tx_pin_->digital_write(false);
+
+    } else { // se dispari allora imposta attesa prossimo bit
+      this->send_next_change = now + this->send_buffer[this->send_index]
+      this->send_index++;
+    }
+  }
+  
+  if (this->send_index > this->max_index) {
+    this->sending = false;
+    this->tx_pin_->digital_write(false);
+    this->send_next_bit = 0;
+    this->send_next_change = 0;
+    this->send_index = 0;
+    this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
+  }
+}
 
   // if (this->preamble) {
   //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
@@ -537,16 +568,6 @@ void ElvoxComponent::sending_loop() {
   //       this->send_index++;
   //     }
     // } else {                                      // end of transmission
-  this->sending = false;
-  this->tx_pin_->digital_write(false);
-  this->send_next_bit = 0;
-  this->send_next_change = 0;
-  this->send_index = 0;
-  this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
-  //   }
-  // }
-}
-
 
 
 }  // namespace elvox_intercom
