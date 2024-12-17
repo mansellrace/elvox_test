@@ -475,12 +475,15 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
 
   this->send_index = 0;
   this->sending = true;
-  this->preamble = true;
+  // this->preamble = true;
 }
 
 void ElvoxComponent::sending_loop() {
   uint32_t now = micros();
-  if (this->preamble) {
+
+  
+
+  // if (this->preamble) {
   //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
   //     this->tx_pin_->digital_write(true);
   //     this->send_next_bit = now + 3000;
@@ -524,12 +527,12 @@ void ElvoxComponent::sending_loop() {
   //       this->send_index++;
   //     }
     // } else {                                      // end of transmission
-      this->sending = false;
-      this->tx_pin_->digital_write(false);
-      this->send_next_bit = 0;
-      this->send_next_change = 0;
-      this->send_index = 0;
-      this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
+    this->sending = false;
+    this->tx_pin_->digital_write(false);
+    this->send_next_bit = 0;
+    this->send_next_change = 0;
+    this->send_index = 0;
+    this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
     // }
   }
 }

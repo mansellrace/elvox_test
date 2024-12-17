@@ -87,7 +87,7 @@ class ElvoxComponent : public Component {
   uint16_t command, address;
   void register_listener(ElvoxIntercomListener *listener);
   void send_command(ElvoxIntercomData data);
-  bool send_buffer[19];
+  uint16_t send_buffer[100];
   bool sending, preamble;
   int send_index;
   uint32_t send_next_bit;
