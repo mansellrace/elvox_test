@@ -505,13 +505,14 @@ void ElvoxComponent::sending_loop() {
 
   if (this->send_next_change == 0) { // analizza prossimo bit
     this->tx_pin_->digital_write(true);
-    while ((now + this->send_buffer[this->send_index]) >= micros()) {
+    this->send_next_change = now + this->send_buffer[this->send_index];
+    while (this->send_next_change >= micros()) {
     // MODULAZIONE
     }
 
     this->send_index++;
     this->tx_pin_->digital_write(false);
-    this->send_next_change = now + this->send_buffer[this->send_index];
+    this->send_next_change = this->send_next_change + this->send_buffer[this->send_index];
     this->send_index++;
   }
   
