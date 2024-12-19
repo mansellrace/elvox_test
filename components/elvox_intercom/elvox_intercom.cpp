@@ -448,22 +448,18 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
   for (size_t i = 0; i < size; i += 2) {
     //this->send_buffer[i] = data.array[i];
 
-    const uint32_t init_time = micros();
-    while (true) {
+    const uint32_t init_time, change_time = micros();
+    while (micros() - data.array[i] >= init_time) {
       this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-      if (micros() - data.array[i] >= init_time) {
-        break;
-      delayMicroseconds(5);
+      while (change_time - micros() >= 9) {
       }
+      change_time += 9;
     }
     this->tx_pin_->digital_write(false);
     delayMicroseconds(data.array[i + 1]);
-
-    
-    
-
-
   }
+
+
   this->max_index = size;
   this->tx_pin_->digital_write(false);
   this->send_index = 0;
