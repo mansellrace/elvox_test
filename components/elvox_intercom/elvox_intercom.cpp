@@ -492,7 +492,6 @@ void ElvoxComponent::sending_loop() {
 
   if (this->send_index == 0) {
     size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
-    ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
   }
   
   if (this->send_next_change > 0) { // attesa pausa tra la modulazione
@@ -506,6 +505,7 @@ void ElvoxComponent::sending_loop() {
   if (this->send_next_change == 0) { // analizza prossimo bit
     this->tx_pin_->digital_write(true);
     this->send_next_change = now + this->send_buffer[this->send_index];
+    ESP_LOGD(TAG, "Elvox: send_buffer %i: %i %i", this->send_index, this->send_buffer[this->send_index], this->send_buffer[this->send_index + 1]);
     while (this->send_next_change >= micros()) {
     // MODULAZIONE
     }
