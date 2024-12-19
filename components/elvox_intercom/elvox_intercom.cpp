@@ -495,7 +495,7 @@ void ElvoxComponent::sending_loop() {
   }
   
   if (this->send_next_change > 0) { // attesa pausa tra la modulazione
-    if (this->send_next_change < micros()) { // controlla se è finita la pausa
+    if (this->send_next_change >= micros()) { // controlla se è finita la pausa
       this->send_next_change = 0;
     } else {
       return;
@@ -510,8 +510,8 @@ void ElvoxComponent::sending_loop() {
     // MODULAZIONE
     }
 
-    this->send_index++;
     this->tx_pin_->digital_write(false);
+    this->send_index++;
     this->send_next_change = this->send_next_change + this->send_buffer[this->send_index];
     this->send_index++;
   }
