@@ -492,10 +492,11 @@ void ElvoxComponent::sending_loop() {
 
   if (this->send_index == 0) {
     size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
+    ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
   }
-  
+  ESP_LOGD(TAG, "Elvox: %i", now);
   if (this->send_next_change > 0) { // se si è in attesa pausa tra la modulazione
-    if (this->send_next_change <= micros()) { // controlla se è finita la pausa
+    if (this->send_next_change <= now) { // controlla se è finita la pausa
       this->send_next_change = 0;
     } else {
       return;
