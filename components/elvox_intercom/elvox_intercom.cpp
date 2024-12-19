@@ -434,57 +434,39 @@ void ElvoxComponent::register_listener(ElvoxIntercomListener *listener) {
 
 
 void ElvoxComponent::send_command(ElvoxIntercomData data) {
-  if (this->sending){
+  if (this->sending){                                                                         // da distemare
     ESP_LOGD(TAG, "Sending of hex %s cancelled, another sending is in progress", data.hex);
     return;
   }
   // ESP_LOGD(TAG, "Elvox: Sending array %s", data.array);
+
+
   ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex.c_str());
   this->rx_pin_->detach_interrupt();
 
   size_t size = std::min(data.array.size(), sizeof(this->send_buffer) / sizeof(this->send_buffer[0]));
-  for (size_t i = 0; i < size; ++i) {
-    this->send_buffer[i] = data.array[i];
+  for (size_t i = 0; i < size; i += 2) {
+    //this->send_buffer[i] = data.array[i];
+
+    const uint32_t init_time = micros();
+    this->tx_pin_->digital_write(true);
+    while (micros() - data.array[i] < init_time) {
+      delayMicroseconds(9);
+      //this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
+    }
+    this->tx_pin_->digital_write(false);
+    delayMicroseconds(data.array[i + 1]);
+
+    
+    
+
+
   }
   this->max_index = size;
-
-
-
-
-  // for (int i=0; i<6; i++){
-  //   if (bitRead(data.command, i)) {
-  //     this->send_buffer[this->send_index] = true;
-  //     checksum_counter++;
-  //   } else {
-  //     this->send_buffer[this->send_index] = false;
-  //   }
-  //   this->send_index++;
-  // }
-
-  // for (int i=0; i<8; i++) {
-  //   if (bitRead(data.address, i)) {
-  //     this->send_buffer[this->send_index] = true;
-  //     checksum_counter++;
-  //   } else {
-  //     this->send_buffer[this->send_index] = false;
-  //   }
-  //   this->send_index++;
-  // }
-
-  // for (int i=0; i<4; i++) {
-  //   if (bitRead(checksum_counter, i)) {
-  //     this->send_buffer[this->send_index] = true;
-  //   } else {
-  //     this->send_buffer[this->send_index] = false;
-  //   }
-  //   this->send_index++;
-  // }
-  // this->send_buffer[this->send_index] = false;
-
+  this->tx_pin_->digital_write(false);
   this->send_index = 0;
   this->send_next_change = 0;
-  this->sending = true;
-  // this->preamble = true;
+  //this->sending = true;
 }
 
 void ElvoxComponent::sending_loop() {
