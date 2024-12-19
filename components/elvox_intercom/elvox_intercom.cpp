@@ -451,7 +451,7 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
     const uint32_t init_time = micros();
     while (true) {
       this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-      if (micros() - data.array[i] < init_time) {
+      if (micros() - data.array[i] >= init_time) {
         break;
       delayMicroseconds(9);
       }
