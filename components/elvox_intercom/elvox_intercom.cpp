@@ -494,8 +494,8 @@ void ElvoxComponent::sending_loop() {
     size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
   }
   
-  if (this->send_next_change > 0) { // attesa pausa tra la modulazione
-    if (this->send_next_change >= micros()) { // controlla se è finita la pausa
+  if (this->send_next_change > 0) { // se si è in attesa pausa tra la modulazione
+    if (this->send_next_change <= micros()) { // controlla se è finita la pausa
       this->send_next_change = 0;
     } else {
       return;
