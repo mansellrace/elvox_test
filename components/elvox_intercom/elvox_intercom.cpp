@@ -452,7 +452,7 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
     this->tx_pin_->digital_write(true);
     while (micros() - data.array[i] < init_time) {
       delayMicroseconds(9);
-      //this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
+      this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
     }
     this->tx_pin_->digital_write(false);
     delayMicroseconds(data.array[i + 1]);
