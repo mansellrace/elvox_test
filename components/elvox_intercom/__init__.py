@@ -116,12 +116,6 @@ ELVOX_INTERCOM_SEND_SCHEMA = cv.Schema(
 @automation.register_action(
     "elvox_intercom.send", ElvoxIntercomSendAction, ELVOX_INTERCOM_SEND_SCHEMA
 )
-# async def elvox_intercom_send_to_code(config, action_id, template_args, args):
-#     paren = await cg.get_variable(config[CONF_ID])
-#     var = cg.new_Pvariable(action_id, template_args, paren)
-#     template_ = await cg.templatable(config[CONF_HEX], args, cg.uint16)
-#     cg.add(var.set_command(template_))
-#     return var
 
 async def elvox_intercom_send_to_code(config, action_id, template_args, args):
     paren = await cg.get_variable(config[CONF_ID])
