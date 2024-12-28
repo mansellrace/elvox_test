@@ -87,12 +87,6 @@ class ElvoxComponent : public Component {
   uint16_t command, address;
   void register_listener(ElvoxIntercomListener *listener);
   void send_command(ElvoxIntercomData data);
-  uint16_t send_buffer[120];
-  bool sending, preamble;
-  int send_index;
-  int max_index;
-  uint32_t send_next_bit;
-  uint32_t send_next_change;
 
  protected:
   InternalGPIOPin *rx_pin_;

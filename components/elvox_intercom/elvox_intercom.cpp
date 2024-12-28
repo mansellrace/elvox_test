@@ -174,10 +174,6 @@ void ElvoxComponent::loop() {
       listener->turn_off(&listener->timer_);
     }
   }
-  if (this->sending){
-    sending_loop();
-    return;
-  }
 
   auto &s = this->store_;
   const uint32_t write_at = s.buffer_write_at;
@@ -355,25 +351,15 @@ void ElvoxComponent::dump(std::vector<uint16_t> src) const {
 }
 
 void ElvoxComponent::register_listener(ElvoxIntercomListener *listener) {
-    this->listeners_.push_back(listener); 
-  }
-
+  this->listeners_.push_back(listener); 
+}
 
 void ElvoxComponent::send_command(ElvoxIntercomData data) {
-  if (this->sending){                                                                         // da distemare
-    ESP_LOGD(TAG, "Sending of hex %s cancelled, another sending is in progress", data.hex);
-    return;
-  }
-  // ESP_LOGD(TAG, "Elvox: Sending array %s", data.array);
-
-
   ESP_LOGD(TAG, "Elvox: Sending hex %s", data.hex.c_str());
   this->rx_pin_->detach_interrupt();
 
-  size_t size = std::min(data.array.size(), sizeof(this->send_buffer) / sizeof(this->send_buffer[0]));
+  size_t size = data.array.size();
   for (size_t i = 0; i < size; i += 2) {
-    //this->send_buffer[i] = data.array[i];
-
     const uint32_t init_time = micros();
     uint32_t change_time = init_time;
     while (micros() - data.array[i] < init_time) {
@@ -384,105 +370,10 @@ void ElvoxComponent::send_command(ElvoxIntercomData data) {
     }
     this->tx_pin_->digital_write(false);
     delayMicroseconds(data.array[i + 1]);
-
-    
-    
-
-
   }
-  this->max_index = size;
   this->tx_pin_->digital_write(false);
-  this->send_index = 0;
-  this->send_next_change = 0;
-  //this->sending = true;
+  this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
 }
-
-void ElvoxComponent::sending_loop() {
-  uint32_t now = micros();
-
-  if (this->send_index == 0) {
-    size_t size = sizeof(this->send_buffer) / sizeof(this->send_buffer[0]);
-    ESP_LOGD(TAG, "Elvox: Number of elements in send_buffer: %i/%zu", this->max_index, size);
-  }
-  //ESP_LOGD(TAG, "Elvox: %i", now);
-  if (this->send_next_change > 0) { // se si è in attesa pausa tra la modulazione
-    if (this->send_next_change <= now) { // controlla se è finita la pausa
-      this->send_next_change = 0;
-    } else {
-      return;
-    }
-  }
-
-  if (this->send_next_change == 0) { // analizza prossimo bit
-    this->tx_pin_->digital_write(true);
-    this->send_next_change = now + this->send_buffer[this->send_index];
-    //ESP_LOGD(TAG, "Elvox: send_buffer %i: %i %i  now %i a %i b %i", this->send_index, this->send_buffer[this->send_index], this->send_buffer[this->send_index + 1], now, this->send_next_change, this->send_next_change + this->send_buffer[this->send_index + 1]);
-    while (this->send_next_change >= micros()) {
-    // MODULAZIONE
-    }
-
-    this->tx_pin_->digital_write(false);
-    this->send_index++;
-    this->send_next_change = this->send_next_change + this->send_buffer[this->send_index];
-    this->send_index++;
-  }
-  
-  if (this->send_index > this->max_index) {
-    this->sending = false;
-    this->tx_pin_->digital_write(false);
-    this->send_next_bit = 0;
-    this->send_next_change = 0;
-    this->send_index = 0;
-    this->rx_pin_->attach_interrupt(ElvoxComponentStore::gpio_intr, &this->store_, gpio::INTERRUPT_ANY_EDGE);
-    //ESP_LOGD(TAG, "Elvox: End of transmission");
-  }
-}
-
-  // if (this->preamble) {
-  //   if (this->send_next_bit == 0 && this->send_next_change == 0) {  // initializing
-  //     this->tx_pin_->digital_write(true);
-  //     this->send_next_bit = now + 3000;
-  //     this->send_next_change = now + 9;
-  //     while (this->send_next_bit >= micros()) {
-  //       if (this->send_next_change < micros()) {
-  //         this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-  //         this->send_next_change = this->send_next_change + 9;
-  //       }
-  //     }
-  //     this->send_next_bit = 0;
-  //     this->send_next_change = this->send_next_change + 16000;
-  //     this->tx_pin_->digital_write(false);
-  //     return;
-  //   } else {                                     // long pause of initializing
-  //     if (now < this->send_next_change) return;
-  //     this->send_next_bit = now + 3000;
-  //     this->send_next_change = now + 9;
-  //     this->preamble = false;
-  //   }
-  // } else {                                       // bit sending routine, preamble ended
-  //   if (this->send_index < 19) {
-  //     if (this->send_next_change > 0) {           // carrier generation
-  //       while (this->send_next_bit >= micros()) {
-  //         if (this->send_next_change < micros()) {
-  //           this->tx_pin_->digital_write(!this->tx_pin_->digital_read());
-  //           this->send_next_change = this->send_next_change + 9;
-  //         }
-  //       }
-  //       this->send_next_change = 0;
-  //       this->tx_pin_->digital_write(false);
-  //       if (this->send_buffer[this->send_index]) {
-  //         this->send_next_bit = this->send_next_bit + 6000;
-  //       } else {
-  //         this->send_next_bit = this->send_next_bit + 3000;
-  //       }
-  //     } else {                                    // no signal generation
-  //       if (now < this->send_next_bit) return;
-  //       this->send_next_bit = now + 3000;
-  //       this->send_next_change = now + 9;
-  //       this->send_index++;
-  //     }
-    // } else {                                      // end of transmission
-
 
 }  // namespace elvox_intercom
 }  // namespace esphome
